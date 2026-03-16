@@ -16,7 +16,6 @@ function PokemonDetail() {
 
   const API_BASE = '/api/v1';
 
-  // Helper to extract raw URL from HTML snippets if pasted accidentally
   const cleanUrl = (url) => {
     if (!url) return '';
     const match = url.match(/src=["']([^"']+)["']/);
