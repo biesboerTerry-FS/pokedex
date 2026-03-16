@@ -14,7 +14,7 @@ function PokemonDetail() {
   });
   const [loading, setLoading] = useState(false);
 
-  const API_BASE = 'http://localhost:8000/api/v1';
+  const API_BASE = '/api/v1';
 
   // Helper to extract raw URL from HTML snippets if pasted accidentally
   const cleanUrl = (url) => {
