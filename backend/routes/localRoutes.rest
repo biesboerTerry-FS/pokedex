@@ -1,0 +1,90 @@
+### GET ALL POKEMON
+GET http://localhost:8000/api/v1/pokemon
+
+###
+
+### GET ONE POKEMON BY ID
+# Replace the ID below with one from the 'Get All' request
+GET http://localhost:8000/api/v1/pokemon/65f1a2b3c4d5e6f7a8b9c0d1
+
+###
+
+### CREATE: BULBASAUR
+POST http://localhost:8000/api/v1/pokemon
+Content-Type: application/json
+
+{
+    "name": "Bulbasaur",
+    "types": ["Grass", "Poison"],
+    "level": 5,
+    "sprite": "https://img.pokemondb.net/sprites/home/normal/bulbasaur.png"
+}
+
+###
+
+### CREATE: CHARMANDER
+POST http://localhost:8000/api/v1/pokemon
+Content-Type: application/json
+
+{
+    "name": "Charmander",
+    "types": ["Fire"],
+    "level": 5,
+    "sprite": "https://img.pokemondb.net/sprites/home/normal/charmander.png"
+}
+
+###
+
+### CREATE: SQUIRTLE
+POST http://localhost:8000/api/v1/pokemon
+Content-Type: application/json
+
+{
+    "name": "Squirtle",
+    "types": ["Water"],
+    "level": 5,
+    "sprite": "https://img.pokemondb.net/sprites/home/normal/squirtle.png"
+}
+
+###
+
+### CREATE: PIKACHU
+POST http://localhost:8000/api/v1/pokemon
+Content-Type: application/json
+
+{
+    "name": "Pikachu",
+    "types": ["Electric"],
+    "level": 12,
+    "sprite": "https://img.pokemondb.net/sprites/home/normal/pikachu.png"
+}
+
+###
+
+### CREATE: GENGAR
+POST http://localhost:8000/api/v1/pokemon
+Content-Type: application/json
+
+{
+    "name": "Gengar",
+    "types": ["Ghost", "Poison"],
+    "level": 45,
+    "sprite": "https://img.pokemondb.net/sprites/home/normal/gengar.png"
+}
+
+###
+
+### UPDATE (PATCH) A POKEMON'S LEVEL
+# Change the ID in the URL to a real ID from your DB
+PATCH http://localhost:8000/api/v1/pokemon/65f1a2b3c4d5e6f7a8b9c0d1
+Content-Type: application/json
+
+{
+    "level": 50
+}
+
+###
+
+### DELETE A POKEMON
+# Change the ID in the URL to a real ID from your DB
+DELETE http://localhost:8000/api/v1/pokemon/65f1a2b3c4d5e6f7a8b9c0d1
