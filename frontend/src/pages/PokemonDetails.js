@@ -7,7 +7,13 @@ function PokemonDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [pokemon, setPokemon] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValues, setEditValues] = useState({
+    name: '',
+    types: '',
+    level: '',
+    sprite: '',
+  });
 
   const API_BASE = '/api/v1';
 
@@ -15,13 +21,45 @@ function PokemonDetail() {
     fetch(`${API_BASE}/pokemon/${id}`)
       .then((res) => res.json())
       .then((data) => {
-        setPokemon({ ...data, name: data.name.replace(/-/g, ' ') });
-        setLoading(false);
+        setPokemon(data);
+        setEditValues({
+          name: data.name,
+          types: data.types.join(', '),
+          level: data.level,
+          sprite: data.sprite,
+        });
       })
       .catch(() => navigate('/dashboard'));
   }, [id, navigate]);
 
-  if (loading || !pokemon) return <div className="App">Loading...</div>;
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    const updatedData = {
+      ...editValues,
+      types: editValues.types.split(',').map((t) => t.trim()),
+    };
+
+    const res = await fetch(`${API_BASE}/pokemon/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedData),
+    });
+
+    if (res.ok) {
+      const newData = await res.json();
+      setPokemon(newData);
+      setIsEditing(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm('Release this Pokémon back into the wild?')) {
+      await fetch(`${API_BASE}/pokemon/${id}`, { method: 'DELETE' });
+      navigate('/dashboard');
+    }
+  };
+
+  if (!pokemon) return <div className="App">Loading...</div>;
 
   return (
     <div className="App">
@@ -29,29 +67,97 @@ function PokemonDetail() {
         <Link to="/dashboard" className="home-link">
           ← Back
         </Link>
-        <h1>Entry #{id.slice(-4)}</h1>
+        <h1>Trainer Log</h1>
       </header>
 
-      <main className="detail-container">
-        <div className="pokemon-card detail-card">
-          <img
-            src={pokemon.sprite}
-            alt={pokemon.name}
-            className="pokemon-sprite"
-          />
-          <div className="card-info">
-            <h2 className="detail-name">{pokemon.name}</h2>
-            <p>Level: {pokemon.level}</p>
-            <div className="type-container">
-              {pokemon.types.map((t) => (
-                <span key={t} style={getTypeStyle(t)}>
-                  {t}
-                </span>
-              ))}
+      <div className="detail-container">
+        {!isEditing ? (
+          <div className="pokemon-card detail-card">
+            <img
+              src={pokemon.sprite}
+              alt={pokemon.name}
+              className="pokemon-sprite"
+            />
+            <div className="card-info">
+              <h2 className="detail-name">{pokemon.name}</h2>
+              <p>Level {pokemon.level}</p>
+              <div className="type-container">
+                {pokemon.types.map((t) => (
+                  <span key={t} style={getTypeStyle(t)}>
+                    {t}
+                  </span>
+                ))}
+              </div>
+              <div className="button-group">
+                <button onClick={() => setIsEditing(true)} className="edit-btn">
+                  Edit Details
+                </button>
+                <button onClick={handleDelete} className="delete-btn">
+                  Release
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        ) : (
+          <div className="form-section detail-edit-form">
+            <h3>Update Entry</h3>
+            <form onSubmit={handleUpdate}>
+              <label>
+                Name:{' '}
+                <input
+                  type="text"
+                  value={editValues.name}
+                  onChange={(e) =>
+                    setEditValues({ ...editValues, name: e.target.value })
+                  }
+                />
+              </label>
+              <label>
+                Level:{' '}
+                <input
+                  type="number"
+                  value={editValues.level}
+                  onChange={(e) =>
+                    setEditValues({ ...editValues, level: e.target.value })
+                  }
+                />
+              </label>
+              <label>
+                Types:{' '}
+                <input
+                  type="text"
+                  value={editValues.types}
+                  onChange={(e) =>
+                    setEditValues({ ...editValues, types: e.target.value })
+                  }
+                />
+              </label>
+              <label>
+                Sprite:{' '}
+                <input
+                  type="text"
+                  value={editValues.sprite}
+                  onChange={(e) =>
+                    setEditValues({ ...editValues, sprite: e.target.value })
+                  }
+                />
+              </label>
+              <div className="button-group">
+                <button type="submit" className="save-btn">
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="cancel-btn"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

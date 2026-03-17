@@ -4,38 +4,40 @@ require('dotenv').config();
 
 const seedDB = async () => {
   try {
-    const uri = process.env.DATABASE_URL || 'mongodb://localhost:27017/pokedex';
+    const uri = process.env.DATABASE_URL;
     await mongoose.connect(uri);
     await Pokemon.deleteMany({});
 
-    console.log(
-      'Fetching real data for 1024 Pokemon... this may take a minute.'
-    );
-
+    console.log('Fetching 1024 Pokemon from PokeAPI...');
     const pokes = [];
-    // We fetch in chunks to avoid slamming the API
+
     for (let i = 1; i <= 1024; i++) {
       try {
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${i}`);
         const data = await response.json();
 
+        // This ensures names are "Pikachu" instead of "poke-species-25"
         pokes.push({
-          name: data.name,
-          types: data.types.map((t) => t.type.name),
+          name:
+            data.name.charAt(0).toUpperCase() +
+            data.name.slice(1).replace(/-/g, ' '),
+          types: data.types.map(
+            (t) => t.type.name.charAt(0).toUpperCase() + t.type.name.slice(1)
+          ),
           level: Math.floor(Math.random() * 50) + 1,
           sprite:
             data.sprites.front_default ||
             `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${i}.png`,
         });
 
-        if (i % 100 === 0) console.log(`Downloaded ${i} Pokémon...`);
-      } catch (err) {
-        console.error(`Error fetching ID ${i}:`, err.message);
+        if (i % 100 === 0) console.log(`Buffered ${i} Pokémon...`);
+      } catch (e) {
+        console.error(`Skip ID ${i}: ${e.message}`);
       }
     }
 
     await Pokemon.insertMany(pokes);
-    console.log('Successfully seeded 1024 Pokémon with real names and types!');
+    console.log('Database Seeded Successfully!');
     process.exit();
   } catch (err) {
     console.error(err);
