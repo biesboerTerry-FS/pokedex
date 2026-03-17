@@ -11,6 +11,14 @@ function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
+  // State for Add New Pokemon Form
+  const [newPoke, setNewPoke] = useState({
+    name: '',
+    types: '',
+    level: 5,
+    sprite: '',
+  });
+
   const API_BASE = '/api/v1';
 
   const getPokemon = useCallback(async () => {
@@ -18,7 +26,6 @@ function Dashboard() {
     try {
       const response = await fetch(`${API_BASE}/pokemon`);
       const data = await response.json();
-      // Clean names: replace hyphens with spaces and capitalize
       const cleanedData = data.map((p) => ({
         ...p,
         name: p.name.replace(/-/g, ' '),
@@ -36,14 +43,36 @@ function Dashboard() {
     getPokemon();
   }, [getPokemon]);
 
-  // Search Logic
   useEffect(() => {
     const results = pokemon.filter((p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredPokemon(results);
-    setCurrentPage(1); // Reset to page 1 on search
+    setCurrentPage(1);
   }, [searchTerm, pokemon]);
+
+  const handleAddNew = async (e) => {
+    e.preventDefault();
+    const payload = {
+      ...newPoke,
+      types: newPoke.types.split(',').map((t) => t.trim()),
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/pokemon`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        setNewPoke({ name: '', types: '', level: 5, sprite: '' });
+        getPokemon();
+        alert('New Pokemon Added!');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -62,6 +91,14 @@ function Dashboard() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-bar"
           />
+          {searchTerm && (
+            <button
+              className="clear-search-btn"
+              onClick={() => setSearchTerm('')}
+            >
+              X
+            </button>
+          )}
         </div>
         <Link to="/" className="home-link">
           Home
@@ -70,6 +107,7 @@ function Dashboard() {
 
       <div className="dashboard-layout">
         <section className="list-section">
+          {/* Results and Pagination on same line */}
           <div className="list-header">
             <h2>Results ({filteredPokemon.length})</h2>
             <div className="pagination-controls">
@@ -114,6 +152,54 @@ function Dashboard() {
             ))}
           </div>
         </section>
+
+        {/* Form on the right side */}
+        <aside className="form-section">
+          <h3>Add New Pokemon</h3>
+          <form onSubmit={handleAddNew}>
+            <label>Name</label>
+            <input
+              type="text"
+              required
+              value={newPoke.name}
+              onChange={(e) => setNewPoke({ ...newPoke, name: e.target.value })}
+            />
+            <label>Level</label>
+            <input
+              type="number"
+              required
+              value={newPoke.level}
+              onChange={(e) =>
+                setNewPoke({ ...newPoke, level: e.target.value })
+              }
+            />
+            <label>Types (Comma separated)</label>
+            <input
+              type="text"
+              placeholder="Fire, Flying"
+              required
+              value={newPoke.types}
+              onChange={(e) =>
+                setNewPoke({ ...newPoke, types: e.target.value })
+              }
+            />
+            <label>Sprite Image URL</label>
+            <input
+              type="text"
+              value={newPoke.sprite}
+              onChange={(e) =>
+                setNewPoke({ ...newPoke, sprite: e.target.value })
+              }
+            />
+            <button
+              type="submit"
+              className="save-btn"
+              style={{ marginTop: '20px' }}
+            >
+              Add to Collection
+            </button>
+          </form>
+        </aside>
       </div>
     </div>
   );
