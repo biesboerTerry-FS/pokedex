@@ -1,7 +1,7 @@
 const path = require('path');
 const mongoose = require('mongoose');
 const Pokemon = require('./models/pokemonModel');
-require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+require('dotenv').config({ path: path.resolve(__dirname, './.env') });
 
 const seedData = [
   {
@@ -220,9 +220,21 @@ const seedDB = async () => {
   try {
     const uri = process.env.DATABASE_URL || 'mongodb://localhost:27017/pokedex';
     await mongoose.connect(uri);
-    await Pokemon.deleteMany({}); // Warning: Clears existing data
-    await Pokemon.insertMany(seedData);
-    console.log('Database Seeded Successfully');
+    await Pokemon.deleteMany({});
+
+    console.log('Fetching 396 Pokemon...');
+    const pokes = [];
+    for (let i = 1; i <= 696; i++) {
+      pokes.push({
+        name: `Pokemon #${i}`,
+        types: ['Normal'],
+        level: Math.floor(Math.random() * 50) + 1,
+        sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${i}.png`,
+      });
+    }
+
+    await Pokemon.insertMany(pokes);
+    console.log('Database Seeded with 396 Pokemon!');
     process.exit();
   } catch (err) {
     console.error(err);

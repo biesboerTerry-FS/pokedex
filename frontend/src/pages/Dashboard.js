@@ -13,6 +13,7 @@ function Dashboard() {
     sprite: '',
   });
 
+  // Using relative path so it works with the frontend proxy and on Heroku
   const API_BASE = '/api/v1';
 
   const cleanUrl = (url) => {
@@ -28,7 +29,7 @@ function Dashboard() {
       const data = await response.json();
       setPokemon(data);
     } catch (err) {
-      console.error(err);
+      console.error('Fetch error:', err);
     } finally {
       setLoading(false);
     }
@@ -46,7 +47,7 @@ function Dashboard() {
     const typeArray = values.types.split(',').map((t) => t.trim());
 
     try {
-      await fetch(`${API_BASE}/pokemon`, {
+      const response = await fetch(`${API_BASE}/pokemon`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -55,10 +56,13 @@ function Dashboard() {
           types: typeArray,
         }),
       });
-      setValues({ name: '', types: '', level: 1, sprite: '' });
-      getPokemon();
+
+      if (response.ok) {
+        setValues({ name: '', types: '', level: 1, sprite: '' });
+        getPokemon();
+      }
     } catch (err) {
-      console.error(err);
+      console.error('Submit error:', err);
     } finally {
       setLoading(false);
     }
@@ -68,64 +72,59 @@ function Dashboard() {
     <div className="App">
       <header className="App-header">
         <h1>Trainer Dashboard</h1>
-        <Link to="/" style={{ color: 'white' }}>
+        <Link to="/" style={{ color: 'white', fontWeight: 'bold' }}>
           Home
         </Link>
       </header>
+
       <div className="dashboard-layout">
         <section className="list-section">
           <h2>My Pokémon</h2>
-          <div className="pokemon-grid">
-            {pokemon.map((p) => {
-              // Logic for circular types if there are more than 3
-              const useCircles = p.types.length > 3;
-
-              return (
+          {loading && pokemon.length === 0 ? (
+            <p>Loading your team...</p>
+          ) : (
+            <div className="pokemon-grid">
+              {pokemon.map((p) => (
                 <Link
                   key={p._id}
                   to={`/pokemon/${p._id}`}
-                  className="quadrant-card"
+                  className="pokemon-card"
                 >
-                  {/* Quadrants 1, 2, 4, 5: Image */}
-                  <div className="card-image-area">
-                    <img
-                      src={p.sprite || 'https://via.placeholder.com/80'}
-                      alt={p.name}
-                      onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/80';
+                  <img
+                    src={p.sprite || 'https://via.placeholder.com/80'}
+                    alt={p.name}
+                    className="pokemon-sprite"
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/80';
+                    }}
+                  />
+                  <div className="card-info">
+                    <h3 style={{ margin: 0, color: 'white' }}>{p.name}</h3>
+                    <p
+                      style={{
+                        margin: '5px 0',
+                        fontSize: '0.85rem',
+                        color: '#aaa',
                       }}
-                    />
-                  </div>
-
-                  {/* Quadrant 3: Name */}
-                  <div className="card-name-area">
-                    <h4>{p.name}</h4>
-                  </div>
-
-                  {/* Quadrant 6: Level */}
-                  <div className="card-level-area">
-                    <span>Lv. {p.level}</span>
-                  </div>
-
-                  {/* Quadrants 7, 8, 9: Types */}
-                  <div className="card-types-area">
-                    {p.types.map((t) => (
-                      <span
-                        key={t}
-                        className={
-                          useCircles ? 'type-circle' : 'type-pill-small'
-                        }
-                        style={getTypeStyle(t)}
-                        title={useCircles ? t : ''}
-                      >
-                        {useCircles ? '' : t}
-                      </span>
-                    ))}
+                    >
+                      Lv. {p.level}
+                    </p>
+                    <div className="type-container">
+                      {p.types.map((t) => (
+                        <span
+                          key={t}
+                          className="type-pill"
+                          style={getTypeStyle(t)}
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </Link>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
 
         <section className="form-section">
@@ -144,14 +143,14 @@ function Dashboard() {
                 />
               </label>
               <label>
-                Types:
+                Types (comma separated):
                 <input
                   type="text"
                   value={values.types}
                   onChange={(e) =>
                     setValues({ ...values, types: e.target.value })
                   }
-                  placeholder="Water, Ice"
+                  placeholder="e.g. Grass, Poison"
                   required
                 />
               </label>
@@ -174,7 +173,7 @@ function Dashboard() {
                   onChange={(e) =>
                     setValues({ ...values, sprite: e.target.value })
                   }
-                  placeholder="Paste direct link or <img> tag"
+                  placeholder="Direct image link"
                 />
               </label>
               <button type="submit" disabled={loading}>
