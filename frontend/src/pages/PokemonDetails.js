@@ -7,7 +7,6 @@ function PokemonDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [pokemon, setPokemon] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [editValues, setEditValues] = useState({
     name: '',
     types: '',
@@ -48,12 +47,12 @@ function PokemonDetail() {
     if (res.ok) {
       const newData = await res.json();
       setPokemon(newData);
-      setIsEditing(false);
+      alert('Pokemon data updated successfully!');
     }
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Release this Pokémon back into the wild?')) {
+    if (window.confirm('Are you sure you want to release this Pokémon?')) {
       await fetch(`${API_BASE}/pokemon/${id}`, { method: 'DELETE' });
       navigate('/dashboard');
     }
@@ -67,96 +66,84 @@ function PokemonDetail() {
         <Link to="/dashboard" className="home-link">
           ← Back
         </Link>
-        <h1>Trainer Log</h1>
+        <h1>Management Portal</h1>
       </header>
 
       <div className="detail-container">
-        {!isEditing ? (
-          <div className="pokemon-card detail-card">
-            <img
-              src={pokemon.sprite}
-              alt={pokemon.name}
-              className="pokemon-sprite"
-            />
-            <div className="card-info">
-              <h2 className="detail-name">{pokemon.name}</h2>
-              <p>Level {pokemon.level}</p>
-              <div className="type-container">
-                {pokemon.types.map((t) => (
-                  <span key={t} style={getTypeStyle(t)}>
-                    {t}
-                  </span>
-                ))}
-              </div>
-              <div className="button-group">
-                <button onClick={() => setIsEditing(true)} className="edit-btn">
-                  Edit Details
-                </button>
-                <button onClick={handleDelete} className="delete-btn">
-                  Release
-                </button>
-              </div>
+        {/* Left: Static Pokemon Card */}
+        <div className="pokemon-card detail-card">
+          <img
+            src={pokemon.sprite}
+            alt={pokemon.name}
+            className="pokemon-sprite"
+          />
+          <div className="card-info">
+            <h3>{pokemon.name}</h3>
+            <p>Level {pokemon.level}</p>
+            <div className="type-container">
+              {pokemon.types.map((t) => (
+                <span key={t} style={getTypeStyle(t)}>
+                  {t}
+                </span>
+              ))}
             </div>
           </div>
-        ) : (
-          <div className="form-section detail-edit-form">
-            <h3>Update Entry</h3>
-            <form onSubmit={handleUpdate}>
-              <label>
-                Name:{' '}
-                <input
-                  type="text"
-                  value={editValues.name}
-                  onChange={(e) =>
-                    setEditValues({ ...editValues, name: e.target.value })
-                  }
-                />
-              </label>
-              <label>
-                Level:{' '}
-                <input
-                  type="number"
-                  value={editValues.level}
-                  onChange={(e) =>
-                    setEditValues({ ...editValues, level: e.target.value })
-                  }
-                />
-              </label>
-              <label>
-                Types:{' '}
-                <input
-                  type="text"
-                  value={editValues.types}
-                  onChange={(e) =>
-                    setEditValues({ ...editValues, types: e.target.value })
-                  }
-                />
-              </label>
-              <label>
-                Sprite:{' '}
-                <input
-                  type="text"
-                  value={editValues.sprite}
-                  onChange={(e) =>
-                    setEditValues({ ...editValues, sprite: e.target.value })
-                  }
-                />
-              </label>
-              <div className="button-group">
-                <button type="submit" className="save-btn">
-                  Save Changes
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(false)}
-                  className="cancel-btn"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
+        </div>
+
+        {/* Right: Sleek Edit Form */}
+        <div className="form-section">
+          <h3>Update Entry</h3>
+          <form onSubmit={handleUpdate}>
+            <label>Pokemon Name</label>
+            <input
+              type="text"
+              value={editValues.name}
+              onChange={(e) =>
+                setEditValues({ ...editValues, name: e.target.value })
+              }
+            />
+
+            <label>Current Level</label>
+            <input
+              type="number"
+              value={editValues.level}
+              onChange={(e) =>
+                setEditValues({ ...editValues, level: e.target.value })
+              }
+            />
+
+            <label>Types (separate with commas)</label>
+            <input
+              type="text"
+              value={editValues.types}
+              onChange={(e) =>
+                setEditValues({ ...editValues, types: e.target.value })
+              }
+            />
+
+            <label>Sprite Image URL</label>
+            <input
+              type="text"
+              value={editValues.sprite}
+              onChange={(e) =>
+                setEditValues({ ...editValues, sprite: e.target.value })
+              }
+            />
+
+            <div className="button-group">
+              <button type="submit" className="save-btn">
+                Save Changes
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="delete-btn"
+              >
+                Release
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
