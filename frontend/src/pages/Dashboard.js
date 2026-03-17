@@ -5,16 +5,11 @@ import { getTypeStyle } from '../utils/typeStyles';
 
 function Dashboard() {
   const [pokemon, setPokemon] = useState([]);
+  const [filteredPokemon, setFilteredPokemon] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
-
-  const [values, setValues] = useState({
-    name: '',
-    types: '',
-    level: 1,
-    sprite: '',
-  });
 
   const API_BASE = '/api/v1';
 
@@ -23,7 +18,13 @@ function Dashboard() {
     try {
       const response = await fetch(`${API_BASE}/pokemon`);
       const data = await response.json();
-      setPokemon(data);
+      // Clean names: replace hyphens with spaces and capitalize
+      const cleanedData = data.map((p) => ({
+        ...p,
+        name: p.name.replace(/-/g, ' '),
+      }));
+      setPokemon(cleanedData);
+      setFilteredPokemon(cleanedData);
     } catch (err) {
       console.error('Fetch error:', err);
     } finally {
@@ -35,44 +36,34 @@ function Dashboard() {
     getPokemon();
   }, [getPokemon]);
 
-  // Pagination Logic
+  // Search Logic
+  useEffect(() => {
+    const results = pokemon.filter((p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredPokemon(results);
+    setCurrentPage(1); // Reset to page 1 on search
+  }, [searchTerm, pokemon]);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = pokemon.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(pokemon.length / itemsPerPage);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const typeArray = values.types.split(',').map((t) => t.trim());
-
-    try {
-      const response = await fetch(`${API_BASE}/pokemon`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...values, types: typeArray }),
-      });
-
-      if (response.ok) {
-        setValues({ name: '', types: '', level: 1, sprite: '' });
-        getPokemon();
-        setCurrentPage(1);
-      }
-    } catch (err) {
-      console.error('Submit error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const currentItems = filteredPokemon.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredPokemon.length / itemsPerPage);
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>Trainer Dashboard</h1>
-        <Link
-          to="/"
-          style={{ color: 'white', fontWeight: 'bold', textDecoration: 'none' }}
-        >
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search Pokemon..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-bar"
+          />
+        </div>
+        <Link to="/" className="home-link">
           Home
         </Link>
       </header>
@@ -80,7 +71,7 @@ function Dashboard() {
       <div className="dashboard-layout">
         <section className="list-section">
           <div className="list-header">
-            <h2>My Collection ({pokemon.length})</h2>
+            <h2>Results ({filteredPokemon.length})</h2>
             <div className="pagination-controls">
               <button
                 disabled={currentPage === 1}
@@ -89,10 +80,10 @@ function Dashboard() {
                 Prev
               </button>
               <span>
-                Page {currentPage} of {totalPages}
+                {currentPage} / {totalPages || 1}
               </span>
               <button
-                disabled={currentPage === totalPages}
+                disabled={currentPage === totalPages || totalPages === 0}
                 onClick={() => setCurrentPage((p) => p + 1)}
               >
                 Next
@@ -100,84 +91,27 @@ function Dashboard() {
             </div>
           </div>
 
-          {loading && pokemon.length === 0 ? (
-            <p>Loading team...</p>
-          ) : (
-            <div className="pokemon-grid">
-              {currentItems.map((p) => (
-                <Link
-                  key={p._id}
-                  to={`/pokemon/${p._id}`}
-                  className="pokemon-card"
-                >
-                  <img
-                    src={p.sprite || 'https://via.placeholder.com/110'}
-                    alt={p.name}
-                    className="pokemon-sprite"
-                  />
-                  <div className="card-info">
-                    <h3>{p.name}</h3>
-                    <p>Level {p.level}</p>
-                    <div className="type-container">
-                      {p.types.map((t) => (
-                        <span key={t} style={getTypeStyle(t)}>
-                          {t}
-                        </span>
-                      ))}
-                    </div>
+          <div className="pokemon-grid">
+            {currentItems.map((p) => (
+              <Link
+                key={p._id}
+                to={`/pokemon/${p._id}`}
+                className="pokemon-card"
+              >
+                <img src={p.sprite} alt={p.name} className="pokemon-sprite" />
+                <div className="card-info">
+                  <h3>{p.name}</h3>
+                  <p>Lv. {p.level}</p>
+                  <div className="type-container">
+                    {p.types.map((t) => (
+                      <span key={t} style={getTypeStyle(t)}>
+                        {t}
+                      </span>
+                    ))}
                   </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </section>
-
-        <section className="form-section">
-          <div className="edit-form">
-            <h3>Register New Pokémon</h3>
-            <form onSubmit={handleSubmit}>
-              <label>Name:</label>
-              <input
-                type="text"
-                value={values.name}
-                onChange={(e) => setValues({ ...values, name: e.target.value })}
-                required
-              />
-
-              <label>Types (comma separated):</label>
-              <input
-                type="text"
-                value={values.types}
-                onChange={(e) =>
-                  setValues({ ...values, types: e.target.value })
-                }
-                placeholder="Grass, Poison"
-                required
-              />
-
-              <label>Level:</label>
-              <input
-                type="number"
-                value={values.level}
-                onChange={(e) =>
-                  setValues({ ...values, level: Number(e.target.value) })
-                }
-                required
-              />
-
-              <label>Sprite URL:</label>
-              <input
-                type="text"
-                value={values.sprite}
-                onChange={(e) =>
-                  setValues({ ...values, sprite: e.target.value })
-                }
-              />
-
-              <button type="submit" disabled={loading}>
-                {loading ? 'Adding...' : 'Add to Database'}
-              </button>
-            </form>
+                </div>
+              </Link>
+            ))}
           </div>
         </section>
       </div>
