@@ -76,36 +76,55 @@ function Dashboard() {
         <section className="list-section">
           <h2>My Pokémon</h2>
           <div className="pokemon-grid">
-            {pokemon.map((p) => (
-              <Link
-                key={p._id}
-                to={`/pokemon/${p._id}`}
-                className="pokemon-card"
-              >
-                <img
-                  src={
-                    p.sprite && p.sprite.trim() !== ''
-                      ? p.sprite
-                      : 'https://via.placeholder.com/80'
-                  }
-                  alt={p.name}
-                  className="pokemon-sprite"
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/80';
-                  }}
-                />
-                <div>
-                  <h3>
-                    {p.name} <small>(Lv. {p.level})</small>
-                  </h3>
-                  {p.types.map((t) => (
-                    <span key={t} className="type-pill" style={getTypeStyle(t)}>
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </Link>
-            ))}
+            {pokemon.map((p) => {
+              // Logic for circular types if there are more than 3
+              const useCircles = p.types.length > 3;
+
+              return (
+                <Link
+                  key={p._id}
+                  to={`/pokemon/${p._id}`}
+                  className="quadrant-card"
+                >
+                  {/* Quadrants 1, 2, 4, 5: Image */}
+                  <div className="card-image-area">
+                    <img
+                      src={p.sprite || 'https://via.placeholder.com/80'}
+                      alt={p.name}
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/80';
+                      }}
+                    />
+                  </div>
+
+                  {/* Quadrant 3: Name */}
+                  <div className="card-name-area">
+                    <h4>{p.name}</h4>
+                  </div>
+
+                  {/* Quadrant 6: Level */}
+                  <div className="card-level-area">
+                    <span>Lv. {p.level}</span>
+                  </div>
+
+                  {/* Quadrants 7, 8, 9: Types */}
+                  <div className="card-types-area">
+                    {p.types.map((t) => (
+                      <span
+                        key={t}
+                        className={
+                          useCircles ? 'type-circle' : 'type-pill-small'
+                        }
+                        style={getTypeStyle(t)}
+                        title={useCircles ? t : ''}
+                      >
+                        {useCircles ? '' : t}
+                      </span>
+                    ))}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
 
