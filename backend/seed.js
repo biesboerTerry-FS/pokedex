@@ -222,19 +222,30 @@ const seedDB = async () => {
     await mongoose.connect(uri);
     await Pokemon.deleteMany({});
 
-    console.log('Fetching 396 Pokemon...');
+    const typePool = [
+      'Fire',
+      'Water',
+      'Grass',
+      'Electric',
+      'Psychic',
+      'Ice',
+      'Dragon',
+      'Dark',
+      'Fairy',
+    ];
     const pokes = [];
-    for (let i = 1; i <= 696; i++) {
+
+    for (let i = 1; i <= 963; i++) {
       pokes.push({
-        name: `Pokemon #${i}`,
-        types: ['Normal'],
-        level: Math.floor(Math.random() * 50) + 1,
+        name: `Poke-Species ${i}`,
+        types: [typePool[Math.floor(Math.random() * typePool.length)]],
+        level: Math.floor(Math.random() * 99) + 1,
         sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${i}.png`,
       });
     }
 
     await Pokemon.insertMany(pokes);
-    console.log('Database Seeded with 396 Pokemon!');
+    console.log('Successfully Seeded 396 Pokemon!');
     process.exit();
   } catch (err) {
     console.error(err);

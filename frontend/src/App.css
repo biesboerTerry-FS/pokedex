@@ -50,26 +50,42 @@ body {
 
 .pokemon-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 25px;
+  padding: 10px;
 }
 
 .pokemon-card {
-  background: var(--card-bg);
-  border-radius: 12px;
+  /* Pokemon White Background */
+  background: #fdfdfd;
+  border-radius: 15px;
   padding: 15px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-decoration: none;
-  border: 1px solid #444;
-  transition: all 0.2s ease;
+
+  /* The Poke-Blue Outline */
+  outline: 4px solid var(--poke-blue);
+  outline-offset: -2px;
+
+  /* The Pokeball Border effect (Red top, White bottom, Black sides) */
+  /* We use a thick border and a linear gradient to simulate the ball */
+  border-top: 10px solid var(--poke-red);
+  border-bottom: 10px solid #ffffff;
+  border-left: 4px solid #333;
+  border-right: 4px solid #333;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  box-sizing: border-box;
 }
 
 .pokemon-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--poke-blue);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  z-index: 10;
 }
 
 .pokemon-sprite {
@@ -86,15 +102,17 @@ body {
 
 .card-info h3 {
   margin: 0;
-  color: white;
-  font-size: 1.1rem;
+  /* Dark text for the white background */
+  color: #333;
+  font-size: 1.2rem;
   text-transform: capitalize;
+  font-weight: 800;
 }
 
 .card-info p {
   margin: 4px 0 10px;
-  color: #aaa;
-  font-size: 0.85rem;
+  color: #666;
+  font-weight: bold;
 }
 
 .type-container {
