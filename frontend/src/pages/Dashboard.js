@@ -56,7 +56,7 @@ function Dashboard() {
       if (response.ok) {
         setValues({ name: '', types: '', level: 1, sprite: '' });
         getPokemon();
-        setCurrentPage(1); // Return to start to see new entry
+        setCurrentPage(1);
       }
     } catch (err) {
       console.error('Submit error:', err);
@@ -69,7 +69,10 @@ function Dashboard() {
     <div className="App">
       <header className="App-header">
         <h1>Trainer Dashboard</h1>
-        <Link to="/" style={{ color: 'white', fontWeight: 'bold' }}>
+        <Link
+          to="/"
+          style={{ color: 'white', fontWeight: 'bold', textDecoration: 'none' }}
+        >
           Home
         </Link>
       </header>
@@ -77,11 +80,11 @@ function Dashboard() {
       <div className="dashboard-layout">
         <section className="list-section">
           <div className="list-header">
-            <h2>My Pokémon ({pokemon.length})</h2>
+            <h2>My Collection ({pokemon.length})</h2>
             <div className="pagination-controls">
               <button
                 disabled={currentPage === 1}
-                onClick={() => setCurrentPage((prev) => prev - 1)}
+                onClick={() => setCurrentPage((p) => p - 1)}
               >
                 Prev
               </button>
@@ -90,7 +93,7 @@ function Dashboard() {
               </span>
               <button
                 disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((prev) => prev + 1)}
+                onClick={() => setCurrentPage((p) => p + 1)}
               >
                 Next
               </button>
@@ -98,7 +101,7 @@ function Dashboard() {
           </div>
 
           {loading && pokemon.length === 0 ? (
-            <p>Loading your team...</p>
+            <p>Loading team...</p>
           ) : (
             <div className="pokemon-grid">
               {currentItems.map((p) => (
@@ -108,13 +111,13 @@ function Dashboard() {
                   className="pokemon-card"
                 >
                   <img
-                    src={p.sprite || 'https://via.placeholder.com/100'}
+                    src={p.sprite || 'https://via.placeholder.com/110'}
                     alt={p.name}
                     className="pokemon-sprite"
                   />
                   <div className="card-info">
                     <h3>{p.name}</h3>
-                    <p>Lv. {p.level}</p>
+                    <p>Level {p.level}</p>
                     <div className="type-container">
                       {p.types.map((t) => (
                         <span key={t} style={getTypeStyle(t)}>
@@ -133,50 +136,44 @@ function Dashboard() {
           <div className="edit-form">
             <h3>Register New Pokémon</h3>
             <form onSubmit={handleSubmit}>
-              <label>
-                Name:{' '}
-                <input
-                  type="text"
-                  value={values.name}
-                  onChange={(e) =>
-                    setValues({ ...values, name: e.target.value })
-                  }
-                  required
-                />
-              </label>
-              <label>
-                Types:{' '}
-                <input
-                  type="text"
-                  value={values.types}
-                  onChange={(e) =>
-                    setValues({ ...values, types: e.target.value })
-                  }
-                  placeholder="Grass, Poison"
-                  required
-                />
-              </label>
-              <label>
-                Level:{' '}
-                <input
-                  type="number"
-                  value={values.level}
-                  onChange={(e) =>
-                    setValues({ ...values, level: Number(e.target.value) })
-                  }
-                  required
-                />
-              </label>
-              <label>
-                Sprite URL:{' '}
-                <input
-                  type="text"
-                  value={values.sprite}
-                  onChange={(e) =>
-                    setValues({ ...values, sprite: e.target.value })
-                  }
-                />
-              </label>
+              <label>Name:</label>
+              <input
+                type="text"
+                value={values.name}
+                onChange={(e) => setValues({ ...values, name: e.target.value })}
+                required
+              />
+
+              <label>Types (comma separated):</label>
+              <input
+                type="text"
+                value={values.types}
+                onChange={(e) =>
+                  setValues({ ...values, types: e.target.value })
+                }
+                placeholder="Grass, Poison"
+                required
+              />
+
+              <label>Level:</label>
+              <input
+                type="number"
+                value={values.level}
+                onChange={(e) =>
+                  setValues({ ...values, level: Number(e.target.value) })
+                }
+                required
+              />
+
+              <label>Sprite URL:</label>
+              <input
+                type="text"
+                value={values.sprite}
+                onChange={(e) =>
+                  setValues({ ...values, sprite: e.target.value })
+                }
+              />
+
               <button type="submit" disabled={loading}>
                 {loading ? 'Adding...' : 'Add to Database'}
               </button>
