@@ -34,7 +34,7 @@ function Home() {
                 cursor: 'pointer',
               }}
             >
-              Enter Database
+              Enter Pokedox
             </button>
           </Link>
         </div>

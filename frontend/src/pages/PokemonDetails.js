@@ -18,7 +18,7 @@ function PokemonDetail() {
 
   useEffect(() => {
     fetch(`${API_BASE}/pokemon/${id}`)
-      .then((res) => res.json())
+      .then((response) => response.json())
       .then((data) => {
         setPokemon(data);
         setEditValues({
@@ -31,21 +31,21 @@ function PokemonDetail() {
       .catch(() => navigate('/dashboard'));
   }, [id, navigate]);
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
+  const handleUpdate = async (event) => {
+    event.preventDefault();
     const updatedData = {
       ...editValues,
-      types: editValues.types.split(',').map((t) => t.trim()),
+      types: editValues.types.split(',').map((types) => types.trim()),
     };
 
-    const res = await fetch(`${API_BASE}/pokemon/${id}`, {
+    const response = await fetch(`${API_BASE}/pokemon/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedData),
     });
 
-    if (res.ok) {
-      const newData = await res.json();
+    if (response.ok) {
+      const newData = await response.json();
       setPokemon(newData);
       alert('Pokemon data updated successfully!');
     }
@@ -70,7 +70,6 @@ function PokemonDetail() {
       </header>
 
       <div className="detail-container">
-        {/* Left: Static Pokemon Card */}
         <div className="pokemon-card detail-card">
           <img
             src={pokemon.sprite}
@@ -81,16 +80,15 @@ function PokemonDetail() {
             <h3>{pokemon.name}</h3>
             <p>Level {pokemon.level}</p>
             <div className="type-container">
-              {pokemon.types.map((t) => (
-                <span key={t} style={getTypeStyle(t)}>
-                  {t}
+              {pokemon.types.map((types) => (
+                <span key={types} style={getTypeStyle(types)}>
+                  {types}
                 </span>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Right: Sleek Edit Form */}
         <div className="form-section">
           <h3>Update Entry</h3>
           <form onSubmit={handleUpdate}>
@@ -98,8 +96,8 @@ function PokemonDetail() {
             <input
               type="text"
               value={editValues.name}
-              onChange={(e) =>
-                setEditValues({ ...editValues, name: e.target.value })
+              onChange={(event) =>
+                setEditValues({ ...editValues, name: event.target.value })
               }
             />
 
@@ -107,8 +105,8 @@ function PokemonDetail() {
             <input
               type="number"
               value={editValues.level}
-              onChange={(e) =>
-                setEditValues({ ...editValues, level: e.target.value })
+              onChange={(event) =>
+                setEditValues({ ...editValues, level: event.target.value })
               }
             />
 
@@ -116,8 +114,8 @@ function PokemonDetail() {
             <input
               type="text"
               value={editValues.types}
-              onChange={(e) =>
-                setEditValues({ ...editValues, types: e.target.value })
+              onChange={(event) =>
+                setEditValues({ ...editValues, types: event.target.value })
               }
             />
 
@@ -125,14 +123,14 @@ function PokemonDetail() {
             <input
               type="text"
               value={editValues.sprite}
-              onChange={(e) =>
-                setEditValues({ ...editValues, sprite: e.target.value })
+              onChange={(event) =>
+                setEditValues({ ...editValues, sprite: event.target.value })
               }
             />
 
             <div className="button-group">
               <button type="submit" className="save-btn">
-                Save Changes
+                Save
               </button>
               <button
                 type="button"

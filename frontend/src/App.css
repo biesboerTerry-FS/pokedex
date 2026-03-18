@@ -32,7 +32,6 @@ body {
   background-color: #f0f0f0;
 }
 
-/* Dashboard Layout */
 .dashboard-layout {
   display: grid;
   grid-template-columns: 1fr 340px;
@@ -42,7 +41,6 @@ body {
   margin: 0 auto;
 }
 
-/* Updated List Header Alignment */
 .list-header {
   display: flex;
   justify-content: space-between;
@@ -170,7 +168,6 @@ body {
   background: var(--poke-red);
 }
 
-/* Sidebar & Detail Form Management */
 .form-section {
   background: white;
   padding: 30px;
@@ -254,7 +251,6 @@ body {
   flex-wrap: wrap;
 }
 
-/* Detail Page specific container */
 .detail-container {
   display: flex;
   justify-content: center;

@@ -1,5 +1,5 @@
 export const getTypeStyle = (type) => {
-  const t = type.toLowerCase().trim();
+  const types = type.toLowerCase().trim();
   const colors = {
     normal: '#A8A77A',
     fire: '#EE8130',
@@ -22,10 +22,12 @@ export const getTypeStyle = (type) => {
   };
 
   return {
-    backgroundColor: colors[t] || '#777',
-    color: ['electric', 'ice', 'steel', 'normal', 'grass', 'ground'].includes(t)
-      ? '#333'
-      : '#fff',
+    backgroundColor: colors[types] || '#777',
+    color: ['electric', 'ice', 'steel', 'normal', 'grass', 'ground'].includes(
+      types
+    )
+      ? '#333333'
+      : '#ffffff',
     padding: '4px 10px',
     borderRadius: '4px',
     fontSize: '0.75rem',

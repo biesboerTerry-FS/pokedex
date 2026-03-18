@@ -9,38 +9,40 @@ const seedDB = async () => {
     await Pokemon.deleteMany({});
 
     console.log('Fetching 1024 Pokemon from PokeAPI...');
-    const pokes = [];
+    const pokemon = [];
 
-    for (let i = 1; i <= 1024; i++) {
+    for (let index = 1; index <= 1024; index++) {
       try {
-        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${i}`);
+        const response = await fetch(
+          `https://pokeapi.co/api/v2/pokemon/${index}`
+        );
         const data = await response.json();
 
-        // This ensures names are "Pikachu" instead of "poke-species-25"
-        pokes.push({
+        pokemon.push({
           name:
             data.name.charAt(0).toUpperCase() +
             data.name.slice(1).replace(/-/g, ' '),
           types: data.types.map(
-            (t) => t.type.name.charAt(0).toUpperCase() + t.type.name.slice(1)
+            (type) =>
+              type.type.name.charAt(0).toUpperCase() + type.type.name.slice(1)
           ),
           level: Math.floor(Math.random() * 50) + 1,
           sprite:
             data.sprites.front_default ||
-            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${i}.png`,
+            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index}.png`,
         });
 
-        if (i % 100 === 0) console.log(`Buffered ${i} Pokémon...`);
-      } catch (e) {
-        console.error(`Skip ID ${i}: ${e.message}`);
+        if (index % 100 === 0) console.log(`Buffered ${index} Pokémon...`);
+      } catch (error) {
+        console.error(`Skip ID ${i}: ${error.message}`);
       }
     }
 
-    await Pokemon.insertMany(pokes);
+    await Pokemon.insertMany(pokemon);
     console.log('Database Seeded Successfully!');
     process.exit();
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     process.exit(1);
   }
 };

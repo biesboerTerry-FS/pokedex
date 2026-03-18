@@ -4,7 +4,6 @@ GET http://localhost:8000/api/v1/pokemon
 ###
 
 ### GET ONE POKEMON BY ID
-# Replace the ID below with one from the 'Get All' request
 GET http://localhost:8000/api/v1/pokemon/65f1a2b3c4d5e6f7a8b9c0d1
 
 ###
@@ -75,7 +74,6 @@ Content-Type: application/json
 ###
 
 ### UPDATE (PATCH) A POKEMON'S LEVEL
-# Change the ID in the URL to a real ID from your DB
 PATCH http://localhost:8000/api/v1/pokemon/65f1a2b3c4d5e6f7a8b9c0d1
 Content-Type: application/json
 
@@ -86,5 +84,4 @@ Content-Type: application/json
 ###
 
 ### DELETE A POKEMON
-# Change the ID in the URL to a real ID from your DB
 DELETE http://localhost:8000/api/v1/pokemon/65f1a2b3c4d5e6f7a8b9c0d1

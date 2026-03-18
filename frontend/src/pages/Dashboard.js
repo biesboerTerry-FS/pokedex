@@ -9,10 +9,9 @@ function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
+  const itemsPerPage = 32;
 
-  // State for Add New Pokemon Form
-  const [newPoke, setNewPoke] = useState({
+  const [newPokemon, setNewPokemon] = useState({
     name: '',
     types: '',
     level: 5,
@@ -26,9 +25,9 @@ function Dashboard() {
     try {
       const response = await fetch(`${API_BASE}/pokemon`);
       const data = await response.json();
-      const cleanedData = data.map((p) => ({
-        ...p,
-        name: p.name.replace(/-/g, ' '),
+      const cleanedData = data.map((pokemon) => ({
+        ...pokemon,
+        name: pokemon.name.replace(/-/g, ' '),
       }));
       setPokemon(cleanedData);
       setFilteredPokemon(cleanedData);
@@ -44,8 +43,8 @@ function Dashboard() {
   }, [getPokemon]);
 
   useEffect(() => {
-    const results = pokemon.filter((p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const results = pokemon.filter((pokemon) =>
+      pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredPokemon(results);
     setCurrentPage(1);
@@ -54,8 +53,8 @@ function Dashboard() {
   const handleAddNew = async (e) => {
     e.preventDefault();
     const payload = {
-      ...newPoke,
-      types: newPoke.types.split(',').map((t) => t.trim()),
+      ...newPokemon,
+      types: newPokemon.types.split(',').map((t) => t.trim()),
     };
 
     try {
@@ -65,7 +64,7 @@ function Dashboard() {
         body: JSON.stringify(payload),
       });
       if (res.ok) {
-        setNewPoke({ name: '', types: '', level: 5, sprite: '' });
+        setNewPokemon({ name: '', types: '', level: 5, sprite: '' });
         getPokemon();
         alert('New Pokemon Added!');
       }
@@ -88,7 +87,7 @@ function Dashboard() {
             type="text"
             placeholder="Search Pokemon..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(event) => setSearchTerm(event.target.value)}
             className="search-bar"
           />
           {searchTerm && (
@@ -107,13 +106,12 @@ function Dashboard() {
 
       <div className="dashboard-layout">
         <section className="list-section">
-          {/* Results and Pagination on same line */}
           <div className="list-header">
             <h2>Results ({filteredPokemon.length})</h2>
             <div className="pagination-controls">
               <button
                 disabled={currentPage === 1}
-                onClick={() => setCurrentPage((p) => p - 1)}
+                onClick={() => setCurrentPage((page) => page - 1)}
               >
                 Prev
               </button>
@@ -122,7 +120,7 @@ function Dashboard() {
               </span>
               <button
                 disabled={currentPage === totalPages || totalPages === 0}
-                onClick={() => setCurrentPage((p) => p + 1)}
+                onClick={() => setCurrentPage((page) => page + 1)}
               >
                 Next
               </button>
@@ -130,20 +128,24 @@ function Dashboard() {
           </div>
 
           <div className="pokemon-grid">
-            {currentItems.map((p) => (
+            {currentItems.map((pokemon) => (
               <Link
-                key={p._id}
-                to={`/pokemon/${p._id}`}
+                key={pokemon._id}
+                to={`/pokemon/${pokemon._id}`}
                 className="pokemon-card"
               >
-                <img src={p.sprite} alt={p.name} className="pokemon-sprite" />
+                <img
+                  src={pokemon.sprite}
+                  alt={pokemon.name}
+                  className="pokemon-sprite"
+                />
                 <div className="card-info">
-                  <h3>{p.name}</h3>
-                  <p>Lv. {p.level}</p>
+                  <h3>{pokemon.name}</h3>
+                  <p>Lv. {pokemon.level}</p>
                   <div className="type-container">
-                    {p.types.map((t) => (
-                      <span key={t} style={getTypeStyle(t)}>
-                        {t}
+                    {pokemon.types.map((types) => (
+                      <span key={types} style={getTypeStyle(types)}>
+                        {types}
                       </span>
                     ))}
                   </div>
@@ -153,7 +155,6 @@ function Dashboard() {
           </div>
         </section>
 
-        {/* Form on the right side */}
         <aside className="form-section">
           <h3>Add New Pokemon</h3>
           <form onSubmit={handleAddNew}>
@@ -161,16 +162,18 @@ function Dashboard() {
             <input
               type="text"
               required
-              value={newPoke.name}
-              onChange={(e) => setNewPoke({ ...newPoke, name: e.target.value })}
+              value={newPokemon.name}
+              onChange={(event) =>
+                setNewPokemon({ ...newPokemon, name: event.target.value })
+              }
             />
             <label>Level</label>
             <input
               type="number"
               required
-              value={newPoke.level}
-              onChange={(e) =>
-                setNewPoke({ ...newPoke, level: e.target.value })
+              value={newPokemon.level}
+              onChange={(event) =>
+                setNewPokemon({ ...newPokemon, level: event.target.value })
               }
             />
             <label>Types (Comma separated)</label>
@@ -178,17 +181,17 @@ function Dashboard() {
               type="text"
               placeholder="Fire, Flying"
               required
-              value={newPoke.types}
-              onChange={(e) =>
-                setNewPoke({ ...newPoke, types: e.target.value })
+              value={newPokemon.types}
+              onChange={(event) =>
+                setNewPokemon({ ...newPokemon, types: event.target.value })
               }
             />
             <label>Sprite Image URL</label>
             <input
               type="text"
-              value={newPoke.sprite}
-              onChange={(e) =>
-                setNewPoke({ ...newPoke, sprite: e.target.value })
+              value={newPokemon.sprite}
+              onChange={(event) =>
+                setNewPokemon({ ...newPokemon, sprite: event.target.value })
               }
             />
             <button
@@ -196,7 +199,7 @@ function Dashboard() {
               className="save-btn"
               style={{ marginTop: '20px' }}
             >
-              Add to Collection
+              Add to Pokedex
             </button>
           </form>
         </aside>
