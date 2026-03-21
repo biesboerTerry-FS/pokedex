@@ -1,5 +1,8 @@
 export const getTypeStyle = (type) => {
-  const types = type.toLowerCase().trim();
+  const normalized = String(type || '')
+    .toLowerCase()
+    .trim();
+
   const colors = {
     normal: '#A8A77A',
     fire: '#EE8130',
@@ -22,17 +25,11 @@ export const getTypeStyle = (type) => {
   };
 
   return {
-    backgroundColor: colors[types] || '#777',
+    backgroundColor: colors[normalized] || '#777777',
     color: ['electric', 'ice', 'steel', 'normal', 'grass', 'ground'].includes(
-      types
+      normalized
     )
       ? '#333333'
       : '#ffffff',
-    padding: '4px 10px',
-    borderRadius: '4px',
-    fontSize: '0.75rem',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    display: 'inline-block',
   };
 };

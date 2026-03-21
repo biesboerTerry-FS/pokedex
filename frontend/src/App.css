@@ -9,150 +9,272 @@
 
 body {
   margin: 0;
-  background-color: var(--poke-white);
+  background-color: #f0f0f0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: var(--poke-dark);
 }
 
 .App-header {
   background-color: var(--poke-red);
-  padding: 20px;
+  padding: 15px 30px;
   color: white;
-  border-bottom: 8px solid var(--poke-dark);
+  border-bottom: 6px solid var(--poke-dark);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.App-header h1 {
-  text-shadow: 2px 2px var(--poke-dark-blue);
-  color: var(--poke-yellow);
-  margin: 0;
-}
-
 .hero-banner {
   width: 100%;
-  max-height: 400px;
-  object-fit: cover;
-  border-bottom: 5px solid var(--poke-yellow);
+  max-height: 450px;
+  object-fit: contain;
+  display: block;
+  margin: 20px auto;
+  background-color: #f0f0f0;
 }
 
 .dashboard-layout {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 340px;
   padding: 20px;
-  gap: 30px;
-  flex-wrap: wrap;
+  gap: 25px;
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
-.list-section {
-  flex: 2;
-  min-width: 300px;
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 10px;
+}
+
+.list-header h2 {
+  margin: 0;
+  color: var(--poke-dark-blue);
+  font-size: 1.5rem;
 }
 
 .pokemon-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 25px;
 }
 
+/* Card Design */
 .pokemon-card {
-  background: white;
-  border: 3px solid var(--poke-dark);
-  border-radius: 15px;
-  padding: 14px;
+  background: var(--poke-yellow);
+  border-radius: 20px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  min-height: 200px;
-  transition: transform 0.2s;
   text-decoration: none;
-  color: inherit;
-}
-
-.pokemon-card:hover {
-  transform: scale(1.02);
-  border-color: var(--poke-blue);
-}
-
-.pokemon-sprite {
-  width: 72px;
-  height: 72px;
-  margin-bottom: 12px;
-}
-
-.pokemon-card h3 {
-  margin: 0 0 10px;
-  font-size: 1rem;
-}
-
-.pokemon-card small {
-  display: block;
-  margin-top: 4px;
-}
-
-.pokemon-card .type-pill {
-  display: inline-block;
-  margin: 3px;
-}
-
-.form-section {
-  flex: 1;
-  background: var(--poke-yellow);
-  padding: 25px;
-  border-radius: 15px;
-  border: 4px solid var(--poke-dark-blue);
-  height: fit-content;
-}
-
-.edit-form label {
-  display: block;
-  margin-bottom: 10px;
-  font-weight: bold;
-  max-width: 280px;
-}
-
-.edit-form input {
-  width: 100%;
-  max-width: 280px;
-  padding: 10px;
-  margin-top: 5px;
-  border-radius: 5px;
-  border: 2px solid var(--poke-dark);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
 }
 
-button {
-  background-color: var(--poke-blue);
-  color: white;
-  padding: 10px 20px;
+/* Hover ONLY on Dashboard Grid */
+.pokemon-grid .pokemon-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.pokemon-sprite {
+  width: 110px;
+  height: 110px;
+  background: white;
+  border-radius: 50%;
+  border: 5px solid var(--poke-dark-blue);
+  padding: 10px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+.card-info h3 {
+  margin: 0;
+  color: var(--poke-dark-blue);
+  font-size: 1.3rem;
+  text-transform: capitalize;
+  font-weight: 800;
+  text-align: center;
+}
+
+.card-info p {
+  margin: 4px 0 10px;
+  color: #444;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+/* Pagination & Search UI */
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  padding: 8px 15px;
+  border-radius: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-controls button {
+  padding: 5px 15px;
+  border-radius: 15px;
   border: none;
-  border-radius: 5px;
+  background: var(--poke-blue);
+  color: white;
   font-weight: bold;
   cursor: pointer;
-  margin-top: 10px;
 }
 
-button:hover {
-  background-color: var(--poke-dark-blue);
+.pagination-controls button:disabled {
+  background: #ccc;
 }
 
-.type-pill {
-  background: #eee;
-  padding: 2px 10px;
-  border-radius: 10px;
-  font-size: 0.8rem;
-  margin-right: 5px;
-  border: 1px solid #ccc;
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
-@media (max-width: 700px) {
-  .pokemon-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+.search-bar {
+  padding: 10px 45px 10px 20px;
+  border-radius: 25px;
+  border: 3px solid var(--poke-dark-blue);
+  width: 300px;
+  outline: none;
+  font-size: 1rem;
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 15px;
+  background: #ccc;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.clear-search-btn:hover {
+  background: var(--poke-red);
+}
+
+.form-section {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.form-section h3 {
+  margin-top: 0;
+  color: var(--poke-dark-blue);
+  font-size: 1.5rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+.form-section label {
+  display: block;
+  font-weight: bold;
+  margin: 15px 0 5px;
+  color: #555;
+  font-size: 0.85rem;
+}
+
+.form-section input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid #eee;
+  box-sizing: border-box;
+}
+
+.form-section input:focus {
+  border-color: var(--poke-blue);
+  outline: none;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.save-btn {
+  background: var(--poke-blue);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+}
+
+.delete-btn {
+  background: var(--poke-red);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  flex: 1;
+}
+
+.home-link {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 8px 15px;
+  border-radius: 5px;
+}
+
+.type-container {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.detail-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 50px;
+  gap: 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.detail-card {
+  width: 320px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 950px) {
+  .dashboard-layout,
+  .detail-container {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: center;
   }
-
-  .edit-form label,
-  .edit-form input {
-    max-width: 100%;
+  .form-section {
+    position: static;
+    width: 100%;
   }
 }

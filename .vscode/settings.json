@@ -1,0 +1,8 @@
+{
+    "github.copilot.chat.agent.autoFix": true,
+    "github.copilot.chat.setupTests.enabled": false,
+    "github.copilot.chat.summarizeAgentConversationHistory.enabled": false,
+    "github.copilot.chat.updated53CodexPrompt.enabled": false,
+    "github.copilot.chat.newWorkspaceCreation.enabled": false,
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true
+}

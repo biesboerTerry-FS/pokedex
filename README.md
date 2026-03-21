@@ -43,6 +43,42 @@ npm start
 
 The backend serves the frontend build in production mode.
 
+## React Native App (Expo)
+
+A React Native version of this app is now available in `mobile/`.
+
+### 1) Install mobile dependencies
+
+```bash
+npm --prefix mobile install
+```
+
+### 2) Run backend API
+
+```bash
+npm --prefix backend run dev
+```
+
+### 3) Configure API base URL for Expo
+
+Copy the template and adjust it if needed:
+
+```bash
+cp mobile/.env.example mobile/.env
+```
+
+Then start the app:
+
+```bash
+npm --prefix mobile start
+```
+
+For physical devices, replace `localhost` with your computer's LAN IP (for example `http://192.168.1.10:8000/api/v1`).
+
+### 4) Launch on simulator/device
+
+Use Expo CLI options (`i` for iOS simulator, `a` for Android emulator, or scan the QR code with Expo Go).
+
 ## Heroku Deployment
 
 1. Create a Heroku app and connect your repo.

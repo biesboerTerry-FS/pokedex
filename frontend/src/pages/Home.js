@@ -7,7 +7,10 @@ function Home() {
     <div className="App">
       <header className="App-header">
         <h1>Pokédex Master</h1>
-        <Link to="/dashboard" style={{ color: 'white', fontWeight: 'bold' }}>
+        <Link
+          to="/dashboard"
+          style={{ color: 'white', fontWeight: 'bold', textDecoration: 'none' }}
+        >
           Dashboard
         </Link>
       </header>
@@ -20,8 +23,18 @@ function Home() {
             entire roster.
           </p>
           <Link to="/dashboard">
-            <button style={{ fontSize: '1.2rem', padding: '15px 30px' }}>
-              Enter Database
+            <button
+              style={{
+                fontSize: '1.2rem',
+                padding: '15px 30px',
+                background: 'var(--poke-red)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '10px',
+                cursor: 'pointer',
+              }}
+            >
+              Enter Pokedox
             </button>
           </Link>
         </div>
