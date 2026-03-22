@@ -3,14 +3,19 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  SafeAreaView,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { deletePokemon, getPokemonById, updatePokemon } from '../api/client';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  deletePokemon,
+  getApiBaseUrl,
+  getPokemonById,
+  updatePokemon,
+} from '../api/client';
 import common from '../styles/common';
 import { getTypeStyle } from '../utils/typeStyles';
 
@@ -37,7 +42,10 @@ export default function PokemonDetailScreen({ route, navigation }) {
         sprite: data.sprite || '',
       });
     } catch (error) {
-      Alert.alert('Error', 'Could not load Pokémon details.');
+      Alert.alert(
+        'Connection error',
+        `Could not load Pokémon details from ${getApiBaseUrl()}.`
+      );
       navigation.goBack();
     } finally {
       setLoading(false);
@@ -62,7 +70,7 @@ export default function PokemonDetailScreen({ route, navigation }) {
       setPokemon(data);
       Alert.alert('Success', 'Pokémon updated successfully!');
     } catch (error) {
-      Alert.alert('Error', 'Failed to update Pokémon.');
+      Alert.alert('Error', 'Failed to update Pokémon. Check API connection.');
     }
   };
 
@@ -80,7 +88,10 @@ export default function PokemonDetailScreen({ route, navigation }) {
               await deletePokemon(id);
               navigation.navigate('Dashboard');
             } catch (error) {
-              Alert.alert('Error', 'Failed to delete Pokémon.');
+              Alert.alert(
+                'Error',
+                'Failed to delete Pokémon. Check API connection.'
+              );
             }
           },
         },
@@ -99,15 +110,24 @@ export default function PokemonDetailScreen({ route, navigation }) {
   }
 
   return (
-    <SafeAreaView style={common.screen}>
-      <ScrollView contentContainerStyle={common.content}>
-        <View style={common.card}>
+    <SafeAreaView style={common.screen} edges={['left', 'right', 'bottom']}>
+      <ScrollView
+        contentInsetAdjustmentBehavior="never"
+        automaticallyAdjustContentInsets={false}
+        contentContainerStyle={[
+          common.content,
+          { paddingTop: 0, paddingBottom: 8, gap: 8, paddingHorizontal: 10 },
+        ]}
+      >
+        <View style={[common.card, { marginTop: 4 }]}>
+          <Text style={common.sectionTitle}>Update Pokémon</Text>
           <Image
             source={{
               uri: pokemon.sprite || 'https://via.placeholder.com/180',
             }}
-            style={{ width: '100%', height: 180, resizeMode: 'contain' }}
+            style={{ width: '100%', height: 220, resizeMode: 'contain' }}
           />
+
           <Text style={[common.title, { fontSize: 24 }]}>{pokemon.name}</Text>
           <Text style={common.subtitle}>Level {pokemon.level}</Text>
           <View
@@ -118,35 +138,30 @@ export default function PokemonDetailScreen({ route, navigation }) {
               return (
                 <View
                   key={type}
-                  style={{
-                    backgroundColor: style.backgroundColor,
-                    borderRadius: 8,
-                    paddingHorizontal: 10,
-                    paddingVertical: 4,
-                  }}
+                  style={[
+                    common.badge,
+                    { backgroundColor: style.backgroundColor },
+                  ]}
                 >
-                  <Text style={{ color: style.color, fontWeight: '700' }}>
+                  <Text style={[common.badgeText, { color: style.color }]}>
                     {type}
                   </Text>
                 </View>
               );
             })}
           </View>
-        </View>
 
-        <View style={common.card}>
-          <Text style={[common.title, { fontSize: 22 }]}>Update Entry</Text>
-
-          <Text style={common.label}>Pokémon Name</Text>
+          <Text style={common.label}>Name</Text>
           <TextInput
             style={common.input}
             value={editValues.name}
             onChangeText={(value) =>
               setEditValues({ ...editValues, name: value })
             }
+            placeholderTextColor="#94a3b8"
           />
 
-          <Text style={common.label}>Current Level</Text>
+          <Text style={common.label}>Level</Text>
           <TextInput
             style={common.input}
             value={editValues.level}
@@ -154,6 +169,7 @@ export default function PokemonDetailScreen({ route, navigation }) {
             onChangeText={(value) =>
               setEditValues({ ...editValues, level: value })
             }
+            placeholderTextColor="#94a3b8"
           />
 
           <Text style={common.label}>Types (comma separated)</Text>
@@ -163,6 +179,7 @@ export default function PokemonDetailScreen({ route, navigation }) {
             onChangeText={(value) =>
               setEditValues({ ...editValues, types: value })
             }
+            placeholderTextColor="#94a3b8"
           />
 
           <Text style={common.label}>Sprite Image URL</Text>
@@ -172,15 +189,10 @@ export default function PokemonDetailScreen({ route, navigation }) {
             onChangeText={(value) =>
               setEditValues({ ...editValues, sprite: value })
             }
+            placeholderTextColor="#94a3b8"
           />
 
           <View style={[common.row, { marginTop: 16 }]}>
-            <TouchableOpacity
-              style={[common.primaryButton, { flex: 1 }]}
-              onPress={handleUpdate}
-            >
-              <Text style={common.buttonText}>Save</Text>
-            </TouchableOpacity>
             <TouchableOpacity
               style={[
                 common.secondaryButton,
@@ -189,6 +201,12 @@ export default function PokemonDetailScreen({ route, navigation }) {
               onPress={handleDelete}
             >
               <Text style={common.buttonText}>Release</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[common.primaryButton, { flex: 1 }]}
+              onPress={handleUpdate}
+            >
+              <Text style={common.buttonText}>Save</Text>
             </TouchableOpacity>
           </View>
         </View>

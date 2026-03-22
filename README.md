@@ -81,6 +81,8 @@ Use Expo CLI options (`i` for iOS simulator, `a` for Android emulator, or scan t
 
 ## Heroku Deployment
 
+Heroku hosts the backend API only for this project. The React Native app in `mobile/` is started with Expo locally (or in CI preview environments), not as a Heroku web dyno process.
+
 1. Create a Heroku app and connect your repo.
 2. In Heroku Config Vars, set:
    - `DATABASE_URL`
