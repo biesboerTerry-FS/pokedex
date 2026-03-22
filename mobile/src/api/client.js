@@ -1,5 +1,37 @@
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1';
+import Constants from 'expo-constants';
+
+function normalizeBaseUrl(value) {
+  return String(value || '').replace(/\/+$/, '');
+}
+
+function getDevMachineHost() {
+  const hostUri =
+    Constants.expoConfig?.hostUri ||
+    Constants.expoGoConfig?.debuggerHost ||
+    Constants.manifest2?.extra?.expoClient?.hostUri ||
+    '';
+
+  if (!hostUri) {
+    return '';
+  }
+
+  return hostUri.split(':')[0];
+}
+
+export function getApiBaseUrl() {
+  if (process.env.EXPO_PUBLIC_API_BASE_URL) {
+    return normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE_URL);
+  }
+
+  const host = getDevMachineHost();
+  if (host) {
+    return `http://${host}:8000/api/v1`;
+  }
+
+  return 'http://localhost:8000/api/v1';
+}
+
+const API_BASE_URL = getApiBaseUrl();
 
 async function requestJson(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {

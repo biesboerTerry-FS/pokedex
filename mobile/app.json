@@ -4,8 +4,19 @@
     "slug": "pokedex-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "userInterfaceStyle": "automatic",
-    "assetBundlePatterns": ["**/*"]
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      "expo-asset"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.anonymous.pokedex-mobile"
+    }
   }
 }

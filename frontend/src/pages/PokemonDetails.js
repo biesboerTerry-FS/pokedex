@@ -66,7 +66,7 @@ function PokemonDetail() {
         <Link to="/dashboard" className="home-link">
           ← Back
         </Link>
-        <h1>Management Portal</h1>
+        <h1>Details</h1>
       </header>
 
       <div className="detail-container">

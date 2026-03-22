@@ -1,35 +1,29 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   FlatList,
   Image,
-  SafeAreaView,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { createPokemon, getPokemonList } from '../api/client';
+import { useFocusEffect } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { getPokemonList } from '../api/client';
 import { getTypeStyle } from '../utils/typeStyles';
 import common from '../styles/common';
 
-const ITEMS_PER_PAGE = 32;
-
-const emptyPokemon = {
-  name: '',
-  types: '',
-  level: '5',
-  sprite: '',
-};
+const ITEMS_PER_PAGE = 33;
 
 export default function DashboardScreen({ navigation }) {
   const [pokemon, setPokemon] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [newPokemon, setNewPokemon] = useState(emptyPokemon);
 
   const loadPokemon = useCallback(async () => {
     setLoading(true);
@@ -41,26 +35,23 @@ export default function DashboardScreen({ navigation }) {
       }));
       setPokemon(cleanedData);
     } catch (error) {
-      Alert.alert('Error', 'Failed to fetch Pokémon list.');
+      Alert.alert('Connection error', 'Could not reach API.');
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    loadPokemon();
-  }, [loadPokemon]);
+  useFocusEffect(
+    useCallback(() => {
+      loadPokemon();
+    }, [loadPokemon])
+  );
 
   const filteredPokemon = useMemo(() => {
-    const results = pokemon.filter((item) =>
+    return pokemon.filter((item) =>
       item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    return results;
   }, [pokemon, searchTerm]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
 
   const totalPages = Math.max(
     1,
@@ -73,72 +64,74 @@ export default function DashboardScreen({ navigation }) {
     return filteredPokemon.slice(indexOfFirstItem, indexOfLastItem);
   }, [filteredPokemon, currentPage]);
 
-  const handleCreate = async () => {
-    if (!newPokemon.name.trim() || !newPokemon.types.trim()) {
-      Alert.alert('Validation', 'Name and types are required.');
-      return;
-    }
-
-    const payload = {
-      name: newPokemon.name.trim(),
-      types: newPokemon.types
-        .split(',')
-        .map((type) => type.trim())
-        .filter(Boolean),
-      level: Number(newPokemon.level) || 1,
-      sprite: newPokemon.sprite.trim(),
-    };
-
-    try {
-      await createPokemon(payload);
-      setNewPokemon(emptyPokemon);
-      await loadPokemon();
-      Alert.alert('Success', 'New Pokémon added!');
-    } catch (error) {
-      Alert.alert('Error', 'Failed to create Pokémon.');
-    }
-  };
+  const renderPaginationControls = () => (
+    <View
+      style={[
+        common.row,
+        {
+          justifyContent: 'space-between',
+          marginTop: 0,
+          paddingVertical: 0,
+          paddingHorizontal: 0,
+        },
+      ]}
+    >
+      <Text style={{ fontWeight: '800', color: '#ffffff' }}>
+        Results ({filteredPokemon.length})
+      </Text>
+      <View style={common.row}>
+        <TouchableOpacity
+          style={[
+            common.secondaryButton,
+            currentPage === 1 && { opacity: 0.45 },
+          ]}
+          disabled={currentPage === 1}
+          onPress={() => setCurrentPage((page) => Math.max(1, page - 1))}
+        >
+          <Text style={common.buttonText}>Prev</Text>
+        </TouchableOpacity>
+        <Text style={{ fontWeight: '800', color: '#ffffff' }}>
+          {currentPage} / {totalPages}
+        </Text>
+        <TouchableOpacity
+          style={[
+            common.secondaryButton,
+            currentPage >= totalPages && { opacity: 0.45 },
+          ]}
+          disabled={currentPage >= totalPages}
+          onPress={() =>
+            setCurrentPage((page) => Math.min(totalPages, page + 1))
+          }
+        >
+          <Text style={common.buttonText}>Next</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   return (
-    <SafeAreaView style={common.screen}>
-      <ScrollView contentContainerStyle={common.content}>
-        <View style={common.card}>
+    <SafeAreaView style={common.screen} edges={['left', 'right', 'bottom']}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentInsetAdjustmentBehavior="never"
+        automaticallyAdjustContentInsets={false}
+        contentContainerStyle={[
+          common.content,
+          { paddingTop: 0, paddingBottom: 56, gap: 8, paddingHorizontal: 10 },
+        ]}
+      >
+        <View style={[common.card, { marginTop: 4 }]}>
           <Text style={[common.label, { marginTop: 0 }]}>Search Pokémon</Text>
           <TextInput
             style={common.input}
             value={searchTerm}
-            onChangeText={setSearchTerm}
+            onChangeText={(value) => {
+              setSearchTerm(value);
+              setCurrentPage(1);
+            }}
             placeholder="Search Pokémon..."
+            placeholderTextColor="#94a3b8"
           />
-          <View
-            style={[
-              common.row,
-              { justifyContent: 'space-between', marginTop: 10 },
-            ]}
-          >
-            <Text>Results ({filteredPokemon.length})</Text>
-            <View style={common.row}>
-              <TouchableOpacity
-                style={common.secondaryButton}
-                disabled={currentPage === 1}
-                onPress={() => setCurrentPage((page) => Math.max(1, page - 1))}
-              >
-                <Text style={common.buttonText}>Prev</Text>
-              </TouchableOpacity>
-              <Text>
-                {currentPage} / {totalPages}
-              </Text>
-              <TouchableOpacity
-                style={common.secondaryButton}
-                disabled={currentPage >= totalPages}
-                onPress={() =>
-                  setCurrentPage((page) => Math.min(totalPages, page + 1))
-                }
-              >
-                <Text style={common.buttonText}>Next</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
         </View>
 
         {loading ? (
@@ -148,12 +141,12 @@ export default function DashboardScreen({ navigation }) {
             data={currentItems}
             keyExtractor={(item) => item._id}
             scrollEnabled={false}
-            numColumns={2}
+            numColumns={3}
             columnWrapperStyle={{ gap: 10 }}
             contentContainerStyle={{ gap: 10 }}
             renderItem={({ item }) => (
               <TouchableOpacity
-                style={[common.card, { flex: 1 }]}
+                style={styles.pokemonCard}
                 onPress={() =>
                   navigation.navigate('PokemonDetail', { id: item._id })
                 }
@@ -162,32 +155,30 @@ export default function DashboardScreen({ navigation }) {
                   source={{
                     uri: item.sprite || 'https://via.placeholder.com/120',
                   }}
-                  style={{ width: '100%', height: 110, resizeMode: 'contain' }}
+                  style={styles.sprite}
                 />
-                <Text style={{ fontWeight: '700', marginTop: 8 }}>
+                <Text style={styles.nameText} numberOfLines={1}>
                   {item.name}
                 </Text>
-                <Text>Lv. {item.level}</Text>
-                <View style={[common.row, { flexWrap: 'wrap', marginTop: 8 }]}>
+                <Text style={styles.levelText}>Lv. {item.level}</Text>
+                <View style={styles.typeRow}>
                   {item.types.map((type) => {
                     const style = getTypeStyle(type);
                     return (
                       <View
                         key={`${item._id}-${type}`}
-                        style={{
-                          backgroundColor: style.backgroundColor,
-                          borderRadius: 8,
-                          paddingHorizontal: 8,
-                          paddingVertical: 4,
-                        }}
+                        style={[
+                          common.badge,
+                          styles.typeBadge,
+                          { backgroundColor: style.backgroundColor },
+                        ]}
                       >
                         <Text
-                          style={{
-                            color: style.color,
-                            fontSize: 12,
-                            fontWeight: '700',
-                            textTransform: 'uppercase',
-                          }}
+                          style={[
+                            common.badgeText,
+                            styles.typeBadgeText,
+                            { color: style.color },
+                          ]}
                         >
                           {type}
                         </Text>
@@ -199,58 +190,61 @@ export default function DashboardScreen({ navigation }) {
             )}
           />
         )}
-
-        <View style={common.card}>
-          <Text style={[common.title, { fontSize: 22 }]}>Add New Pokémon</Text>
-          <Text style={common.label}>Name</Text>
-          <TextInput
-            style={common.input}
-            value={newPokemon.name}
-            onChangeText={(value) =>
-              setNewPokemon({ ...newPokemon, name: value })
-            }
-            placeholder="Pikachu"
-          />
-
-          <Text style={common.label}>Level</Text>
-          <TextInput
-            style={common.input}
-            value={newPokemon.level}
-            onChangeText={(value) =>
-              setNewPokemon({ ...newPokemon, level: value })
-            }
-            keyboardType="numeric"
-            placeholder="5"
-          />
-
-          <Text style={common.label}>Types (comma separated)</Text>
-          <TextInput
-            style={common.input}
-            value={newPokemon.types}
-            onChangeText={(value) =>
-              setNewPokemon({ ...newPokemon, types: value })
-            }
-            placeholder="Electric"
-          />
-
-          <Text style={common.label}>Sprite Image URL</Text>
-          <TextInput
-            style={common.input}
-            value={newPokemon.sprite}
-            onChangeText={(value) =>
-              setNewPokemon({ ...newPokemon, sprite: value })
-            }
-            placeholder="https://..."
-          />
-
-          <TouchableOpacity
-            style={[common.primaryButton, { marginTop: 16 }]}
-            onPress={handleCreate}
-          >
-            <Text style={common.buttonText}>Add to Pokédex</Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
+
+      {!loading && (
+        <View style={styles.stickyPagination}>
+          {renderPaginationControls()}
+        </View>
+      )}
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  pokemonCard: {
+    ...common.card,
+    flex: 1,
+    minHeight: 170,
+    padding: 10,
+  },
+  sprite: {
+    width: '100%',
+    height: 72,
+    resizeMode: 'contain',
+  },
+  nameText: {
+    fontWeight: '800',
+    marginTop: 6,
+    color: '#111827',
+    fontSize: 13,
+  },
+  levelText: {
+    color: '#4b5563',
+    fontSize: 12,
+    marginTop: 2,
+  },
+  typeRow: {
+    ...common.row,
+    flexWrap: 'wrap',
+    marginTop: 6,
+    gap: 6,
+  },
+  typeBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  typeBadgeText: {
+    fontSize: 9,
+  },
+  stickyPagination: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#ef5350',
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 8,
+  },
+});
