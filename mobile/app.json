@@ -8,6 +8,7 @@
       "ios",
       "android"
     ],
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "assetBundlePatterns": [
       "**/*"

@@ -1,4 +1,4 @@
-package com.pokedexmobile
+package tsunRise.pkg
 
 import android.os.Build
 import android.os.Bundle
