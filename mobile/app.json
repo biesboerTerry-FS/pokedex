@@ -17,6 +17,9 @@
     ],
     "ios": {
       "bundleIdentifier": "com.anonymous.pokedex-mobile"
+    },
+    "android": {
+      "package": "tsunRise.pkg"
     }
   }
 }
