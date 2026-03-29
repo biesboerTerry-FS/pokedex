@@ -266,6 +266,25 @@ body {
   flex-shrink: 0;
 }
 
+@media (min-width: 951px) {
+  .detail-container .detail-card {
+    width: 420px;
+    min-height: 560px;
+    justify-content: center;
+  }
+
+  .detail-container .form-section {
+    width: 420px;
+    min-height: 560px;
+    position: static;
+  }
+
+  .detail-container .detail-card .pokemon-sprite {
+    width: 170px;
+    height: 170px;
+  }
+}
+
 @media (max-width: 950px) {
   .dashboard-layout,
   .detail-container {
