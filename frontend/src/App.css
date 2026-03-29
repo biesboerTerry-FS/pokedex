@@ -267,10 +267,14 @@ body {
 }
 
 @media (min-width: 951px) {
+  .detail-container {
+    align-items: stretch;
+  }
+
   .detail-container .detail-card {
     width: 420px;
     min-height: 560px;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .detail-container .form-section {
