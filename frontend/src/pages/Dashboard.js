@@ -8,6 +8,8 @@ import { getTypeStyle } from '../utils/typeStyles';
 
 function Dashboard() {
   const { logout, trainer } = useAuth();
+  const trainerName = trainer?.name || trainer?.displayName;
+  const trainerGreeting = trainerName ? `Welcome ${trainerName}` : 'Trainer';
   const [pokemon, setPokemon] = useState([]);
   const [filteredPokemon, setFilteredPokemon] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -115,7 +117,7 @@ function Dashboard() {
         </div>
         <div className="header-links">
           <span className="trainer-greeting">
-            {trainer?.displayName || 'Trainer'}
+            {trainerGreeting}
           </span>
           <Link to="/" className="home-link">
             Home

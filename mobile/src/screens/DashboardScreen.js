@@ -14,12 +14,16 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getPokemonList } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import { getTypeStyle } from '../utils/typeStyles';
 import common from '../styles/common';
 
 const ITEMS_PER_PAGE = 33;
 
 export default function DashboardScreen({ navigation }) {
+  const { trainer } = useAuth();
+  const trainerName = trainer?.name || trainer?.displayName;
+  const trainerGreeting = trainerName ? `Welcome ${trainerName}` : 'Trainer';
   const [pokemon, setPokemon] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
@@ -121,6 +125,7 @@ export default function DashboardScreen({ navigation }) {
         ]}
       >
         <View style={[common.card, { marginTop: 4 }]}>
+          <Text style={styles.trainerGreeting}>{trainerGreeting}</Text>
           <Text style={[common.label, { marginTop: 0 }]}>Search Pokémon</Text>
           <TextInput
             style={common.input}
@@ -202,6 +207,12 @@ export default function DashboardScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  trainerGreeting: {
+    fontWeight: '800',
+    color: '#1e3a8a',
+    marginBottom: 6,
+    fontSize: 16,
+  },
   pokemonCard: {
     ...common.card,
     flex: 1,

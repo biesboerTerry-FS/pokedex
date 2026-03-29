@@ -121,7 +121,7 @@ body {
 
 .pagination-controls button {
   padding: 5px 15px;
-  border-radius: 15px;
+  border-radius: 999px;
   border: none;
   background: var(--poke-blue);
   color: white;
@@ -218,7 +218,7 @@ body {
   color: white;
   border: none;
   padding: 14px;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
   font-weight: bold;
   width: 100%;
@@ -229,7 +229,7 @@ body {
   color: white;
   border: none;
   padding: 14px;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
   font-weight: bold;
   flex: 1;
@@ -241,7 +241,7 @@ body {
   font-weight: bold;
   background: rgba(0, 0, 0, 0.2);
   padding: 8px 15px;
-  border-radius: 5px;
+  border-radius: 999px;
 }
 
 .type-container {
@@ -362,7 +362,7 @@ body {
 .secondary-action-btn {
   font-size: 1.2rem;
   padding: 15px 30px;
-  border-radius: 10px;
+  border-radius: 999px;
   cursor: pointer;
   border: none;
   font-weight: bold;
@@ -429,7 +429,7 @@ body {
   color: white;
   border: none;
   padding: 8px 15px;
-  border-radius: 5px;
+  border-radius: 999px;
   font-weight: bold;
   cursor: pointer;
 }
