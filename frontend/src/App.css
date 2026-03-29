@@ -121,7 +121,7 @@ body {
 
 .pagination-controls button {
   padding: 5px 15px;
-  border-radius: 15px;
+  border-radius: 999px;
   border: none;
   background: var(--poke-blue);
   color: white;
@@ -218,7 +218,7 @@ body {
   color: white;
   border: none;
   padding: 14px;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
   font-weight: bold;
   width: 100%;
@@ -229,7 +229,7 @@ body {
   color: white;
   border: none;
   padding: 14px;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
   font-weight: bold;
   flex: 1;
@@ -241,7 +241,7 @@ body {
   font-weight: bold;
   background: rgba(0, 0, 0, 0.2);
   padding: 8px 15px;
-  border-radius: 5px;
+  border-radius: 999px;
 }
 
 .type-container {
@@ -264,6 +264,29 @@ body {
 .detail-card {
   width: 320px;
   flex-shrink: 0;
+}
+
+@media (min-width: 951px) {
+  .detail-container {
+    align-items: stretch;
+  }
+
+  .detail-container .detail-card {
+    width: 420px;
+    min-height: 560px;
+    justify-content: flex-start;
+  }
+
+  .detail-container .form-section {
+    width: 420px;
+    min-height: 560px;
+    position: static;
+  }
+
+  .detail-container .detail-card .pokemon-sprite {
+    width: 170px;
+    height: 170px;
+  }
 }
 
 @media (max-width: 950px) {
@@ -325,4 +348,136 @@ body {
     width: 100%;
     justify-content: center;
   }
+}
+
+.home-auth-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.primary-action-btn,
+.secondary-action-btn {
+  font-size: 1.2rem;
+  padding: 15px 30px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+}
+
+.primary-action-btn {
+  background: var(--poke-red);
+  color: white;
+}
+
+.secondary-action-btn {
+  background: white;
+  color: var(--poke-dark-blue);
+  border: 2px solid var(--poke-dark-blue);
+}
+
+.auth-form {
+  margin-top: 28px;
+  text-align: left;
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.auth-form h3 {
+  margin-top: 0;
+  color: var(--poke-dark-blue);
+}
+
+.auth-form label {
+  display: block;
+  font-weight: bold;
+  margin: 12px 0 6px;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid #eee;
+  box-sizing: border-box;
+}
+
+.auth-error {
+  color: var(--poke-red);
+  font-weight: bold;
+}
+
+.text-button {
+  display: block;
+  margin: 12px auto 0;
+  background: none;
+  border: none;
+  color: var(--poke-blue);
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.link-button {
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 999px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.home-header-actions,
+.header-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.trainer-greeting {
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.pokemon-card-wrap {
+  position: relative;
+}
+
+.pokeball-toggle {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.pokeball-toggle:hover {
+  transform: scale(1.05);
+}
+
+.pokemon-card-wrap .pokemon-card {
+  width: 100%;
+}
+
+.detail-card-wrap {
+  position: relative;
+}
+
+.pokeball-toggle--detail {
+  top: 12px;
+  left: 12px;
 }

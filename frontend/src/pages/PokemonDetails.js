@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import '../App.css';
+import { apiFetch, togglePokemonCatch } from '../api/client';
+import PokeballIcon from '../components/PokeballIcon';
 import { getTypeStyle } from '../utils/typeStyles';
 
 function PokemonDetail() {
@@ -14,12 +16,12 @@ function PokemonDetail() {
     sprite: '',
   });
 
-  const API_BASE = '/api/v1';
-
   useEffect(() => {
-    fetch(`${API_BASE}/pokemon/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
+    let cancelled = false;
+    async function load() {
+      try {
+        const data = await apiFetch(`/pokemon/${id}`);
+        if (cancelled) return;
         setPokemon(data);
         setEditValues({
           name: data.name,
@@ -27,8 +29,14 @@ function PokemonDetail() {
           level: data.level,
           sprite: data.sprite,
         });
-      })
-      .catch(() => navigate('/dashboard'));
+      } catch {
+        navigate('/dashboard');
+      }
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [id, navigate]);
 
   const handleUpdate = async (event) => {
@@ -38,23 +46,35 @@ function PokemonDetail() {
       types: editValues.types.split(',').map((types) => types.trim()),
     };
 
-    const response = await fetch(`${API_BASE}/pokemon/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedData),
-    });
-
-    if (response.ok) {
-      const newData = await response.json();
+    try {
+      const newData = await apiFetch(`/pokemon/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(updatedData),
+      });
       setPokemon(newData);
       alert('Pokemon data updated successfully!');
+    } catch (err) {
+      alert(err.message || 'Update failed.');
     }
   };
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to release this Pokémon?')) {
-      await fetch(`${API_BASE}/pokemon/${id}`, { method: 'DELETE' });
-      navigate('/dashboard');
+      try {
+        await apiFetch(`/pokemon/${id}`, { method: 'DELETE' });
+        navigate('/dashboard');
+      } catch (err) {
+        alert(err.message || 'Delete failed.');
+      }
+    }
+  };
+
+  const handleToggleCatch = async () => {
+    try {
+      const result = await togglePokemonCatch(id);
+      setPokemon((prev) => (prev ? { ...prev, caught: result.caught } : prev));
+    } catch (err) {
+      alert(err.message || 'Could not update catch status.');
     }
   };
 
@@ -70,7 +90,17 @@ function PokemonDetail() {
       </header>
 
       <div className="detail-container">
-        <div className="pokemon-card detail-card">
+        <div className="pokemon-card detail-card detail-card-wrap">
+          <button
+            type="button"
+            className="pokeball-toggle pokeball-toggle--detail"
+            onClick={handleToggleCatch}
+            aria-label={
+              pokemon.caught ? 'Mark as not caught' : 'Mark as caught'
+            }
+          >
+            <PokeballIcon caught={Boolean(pokemon.caught)} size={36} />
+          </button>
           <img
             src={pokemon.sprite}
             alt={pokemon.name}
