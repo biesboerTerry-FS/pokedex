@@ -10,6 +10,8 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 8000;
 const pokemonRouter = require('./routes/pokemonRouter');
+const authRouter = require('./routes/authRouter');
+const { requireAuth } = require('./middleware/authMiddleware');
 const DATABASE_URL = process.env.DATABASE_URL;
 
 mongoose.connect(DATABASE_URL);
@@ -17,7 +19,12 @@ const db = mongoose.connection;
 db.on('error', (error) => console.error(error));
 db.once('open', () => console.log('Connected to Pokedex Database'));
 
-app.use('/api/v1/pokemon', pokemonRouter);
+app.get('/health', (request, response) => {
+  response.json({ ok: true });
+});
+
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/pokemon', requireAuth, pokemonRouter);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/build')));

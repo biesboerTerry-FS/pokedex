@@ -1,9 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../App.css';
+import { apiFetch, togglePokemonCatch } from '../api/client';
+import PokeballIcon from '../components/PokeballIcon';
+import { useAuth } from '../context/AuthContext';
 import { getTypeStyle } from '../utils/typeStyles';
 
 function Dashboard() {
+  const { logout, trainer } = useAuth();
   const [pokemon, setPokemon] = useState([]);
   const [filteredPokemon, setFilteredPokemon] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,16 +22,13 @@ function Dashboard() {
     sprite: '',
   });
 
-  const API_BASE = '/api/v1';
-
   const getPokemon = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/pokemon`);
-      const data = await response.json();
-      const cleanedData = data.map((pokemon) => ({
-        ...pokemon,
-        name: pokemon.name.replace(/-/g, ' '),
+      const data = await apiFetch('/pokemon');
+      const cleanedData = data.map((item) => ({
+        ...item,
+        name: item.name.replace(/-/g, ' '),
       }));
       setPokemon(cleanedData);
       setFilteredPokemon(cleanedData);
@@ -36,15 +37,15 @@ function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }, [API_BASE]);
+  }, []);
 
   useEffect(() => {
     getPokemon();
   }, [getPokemon]);
 
   useEffect(() => {
-    const results = pokemon.filter((pokemon) =>
-      pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const results = pokemon.filter((item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredPokemon(results);
     setCurrentPage(1);
@@ -58,18 +59,31 @@ function Dashboard() {
     };
 
     try {
-      const res = await fetch(`${API_BASE}/pokemon`, {
+      await apiFetch('/pokemon', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      if (res.ok) {
-        setNewPokemon({ name: '', types: '', level: 5, sprite: '' });
-        getPokemon();
-        alert('New Pokemon Added!');
-      }
+      setNewPokemon({ name: '', types: '', level: 5, sprite: '' });
+      getPokemon();
+      alert('New Pokemon Added!');
     } catch (err) {
       console.error(err);
+      alert(err.message || 'Could not add Pokémon.');
+    }
+  };
+
+  const handleToggleCatch = async (e, id) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const result = await togglePokemonCatch(id);
+      setPokemon((prev) =>
+        prev.map((p) =>
+          p._id === id ? { ...p, caught: result.caught } : p
+        )
+      );
+    } catch (err) {
+      alert(err.message || 'Could not update catch status.');
     }
   };
 
@@ -99,9 +113,17 @@ function Dashboard() {
             </button>
           )}
         </div>
-        <Link to="/" className="home-link">
-          Home
-        </Link>
+        <div className="header-links">
+          <span className="trainer-greeting">
+            {trainer?.displayName || 'Trainer'}
+          </span>
+          <Link to="/" className="home-link">
+            Home
+          </Link>
+          <button type="button" className="link-button" onClick={logout}>
+            Log out
+          </button>
+        </div>
       </header>
 
       <div className="dashboard-layout">
@@ -128,29 +150,44 @@ function Dashboard() {
           </div>
 
           <div className="pokemon-grid">
-            {currentItems.map((pokemon) => (
-              <Link
-                key={pokemon._id}
-                to={`/pokemon/${pokemon._id}`}
-                className="pokemon-card"
-              >
-                <img
-                  src={pokemon.sprite}
-                  alt={pokemon.name}
-                  className="pokemon-sprite"
-                />
-                <div className="card-info">
-                  <h3>{pokemon.name}</h3>
-                  <p>Lv. {pokemon.level}</p>
-                  <div className="type-container">
-                    {pokemon.types.map((types) => (
-                      <span key={types} style={getTypeStyle(types)}>
-                        {types}
-                      </span>
-                    ))}
+            {loading && (
+              <p style={{ gridColumn: '1 / -1', textAlign: 'center' }}>
+                Loading Pokémon…
+              </p>
+            )}
+            {!loading &&
+              currentItems.map((item) => (
+              <div key={item._id} className="pokemon-card-wrap">
+                <button
+                  type="button"
+                  className="pokeball-toggle"
+                  onClick={(e) => handleToggleCatch(e, item._id)}
+                  aria-label={
+                    item.caught ? 'Mark as not caught' : 'Mark as caught'
+                  }
+                  title={item.caught ? 'Caught' : 'Not caught'}
+                >
+                  <PokeballIcon caught={Boolean(item.caught)} size={32} />
+                </button>
+                <Link to={`/pokemon/${item._id}`} className="pokemon-card">
+                  <img
+                    src={item.sprite}
+                    alt={item.name}
+                    className="pokemon-sprite"
+                  />
+                  <div className="card-info">
+                    <h3>{item.name}</h3>
+                    <p>Lv. {item.level}</p>
+                    <div className="type-container">
+                      {item.types.map((types) => (
+                        <span key={types} style={getTypeStyle(types)}>
+                          {types}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
             ))}
           </div>
         </section>
